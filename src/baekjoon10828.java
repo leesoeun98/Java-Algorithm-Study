@@ -8,6 +8,7 @@ import java.util.StringTokenizer;
 public class baekjoon10828 {
 
 	public static void main(String[] args) throws IOException {
+		//scanner 사용 시 시간초과남
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		
 		int count = Integer.parseInt(br.readLine());
