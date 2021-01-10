@@ -1,7 +1,36 @@
 import java.util.ArrayList;
+import java.util.PriorityQueue;
 import java.util.Scanner;
 
 public class baekjoon17225 {
+	static class Pair implements Comparable<Pair> {
+		int startTime;
+		String color;
+
+		public Pair(int startTime, String color) {
+			this.startTime = startTime;
+			this.color = color;
+		}
+
+		/*
+		 * 우선순위 큐를 사용자지정 자료형으로 구현 시, compareTo를 오버라이드 해야 하는데 B가 R보다 우선순위가 높도록 작성해야 한다.
+		 * this.color와 p.color를 비교해서 자기자신(B)-상대(R)이면 -1을, 반대면 1을, 같으면 0을 반환, -1일 때 우선순위가
+		 * 높아서 자기자신이 앞에온다.
+		 */
+		@Override
+		public int compareTo(Pair p) {
+			if (this.startTime == p.startTime) {
+				if (this.color.equals("B") && p.color.equals("R")) {
+					return -1;
+				} else if (this.color.equals("R") && p.color.equals("B")) {
+					return 1;
+				} else {
+					return 0;
+				}
+			}
+			return Integer.compare(this.startTime, p.startTime);
+		}
+	}
 
 	public static void main(String[] args) {
 		Scanner scan = new Scanner(System.in);
@@ -10,14 +39,11 @@ public class baekjoon17225 {
 		int n = scan.nextInt();
 		int jgift = 0;
 		int sgift = 0;
-		int scount = 0;
-		int jcount = 0;
 		int gift = 1;
-		int stime = -1;
-		int jtime = -1;
+		int maxs = -1;
+		int maxj = -1;
 
-		ArrayList<Integer> sangmin = new ArrayList<Integer>();
-		ArrayList<Integer> jisoo = new ArrayList<Integer>();
+		PriorityQueue<Pair> pq = new PriorityQueue<>(Pair::compareTo);
 		ArrayList<Integer> sangmingift = new ArrayList<Integer>();
 		ArrayList<Integer> jisoogift = new ArrayList<Integer>();
 
@@ -25,72 +51,46 @@ public class baekjoon17225 {
 			int time = scan.nextInt();
 			String color = scan.next();
 			int m = scan.nextInt();
-
+			int cnt = 0;
 			if (color.equals("B")) {
-				// if(stime>time) time=stime;
-				for (int j = 0; j < m; j++) {
-					// 앞의 선물 포장 끝나고 다음 포장 시작 고려
-					if (sangmin.size() > 0 && time < sangmin.get(sangmin.size() - 1) + a) {
-						time = sangmin.get(sangmin.size() - 1) + a;
-					}
-					sangmin.add(time);
-					time += a;
+				// 앞의 선물 포장 끝나고 다음 포장 시작 고려
+				if (maxs > time)
+					time = maxs;
+				for (int j = time; cnt < m; j += a) {
+					pq.add(new Pair(j, "B"));
+					cnt += 1;
 					sgift += 1;
 				}
+				maxs = time + m * a;
 			} else {
-				for (int j = 0; j < m; j++) {
-					if (jisoo.size() > 0 && time < jisoo.get(jisoo.size() - 1) + a) {
-						time = jisoo.get(jisoo.size() - 1) + a;
-					}
-					jisoo.add(time);
-					time += b;
+				if (maxj > time)
+					time = maxj;
+				for (int j = time; cnt < m; j += b) {
+					pq.add(new Pair(j, "R"));
+					cnt += 1;
 					jgift += 1;
 				}
-
+				maxj = time + m * b;
 			}
 
 		}
 
-		// 시간 순대로 선물 순서 정하는 부분
-		while (jgift - 1 >= jcount && sgift - 1 >= scount) {
-
-			if (sangmin.get(scount) == jisoo.get(jcount)) {
-				sangmingift.add(gift);
-				gift++;
-				scount++;
-				jisoogift.add(gift);
-				gift++;
-				jcount++;
-			} else if (sangmin.get(scount) > jisoo.get(jcount)) {
-				jisoogift.add(gift);
-				gift++;
-				jcount++;
+		while (!pq.isEmpty()) {
+			Pair pair = pq.poll();
+			if (pair.color.equals("B")) {
+				sangmingift.add(gift++);
 			} else {
-				// 나중이므로 상민이 선물이 먼저
-				sangmingift.add(gift);
-				gift++;
-				scount++;
+				jisoogift.add(gift++);
 			}
-		}
-		// 마지막 값 출력
-		while (jcount < jgift) {
-			jisoogift.add(gift);
-			jcount++;
-			gift++;
-		}
-		while (scount < sgift) {
-			sangmingift.add(gift);
-			scount++;
-			gift++;
 		}
 
 		// 정답 출력
-		System.out.println(scount);
+		System.out.println(sgift);
 		for (int i : sangmingift) {
 			System.out.print(i + " ");
 		}
 		System.out.println();
-		System.out.println(jcount);
+		System.out.println(jgift);
 		for (int i : jisoogift) {
 			System.out.print(i + " ");
 		}
