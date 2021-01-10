@@ -1,6 +1,11 @@
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.PriorityQueue;
-import java.util.Scanner;
 
 public class baekjoon17225 {
 	static class Pair implements Comparable<Pair> {
@@ -32,14 +37,18 @@ public class baekjoon17225 {
 		}
 	}
 
-	public static void main(String[] args) {
-		Scanner scan = new Scanner(System.in);
-		int a = scan.nextInt();
-		int b = scan.nextInt();
-		int n = scan.nextInt();
-		int jgift = 0;
-		int sgift = 0;
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+		//
+		int[] first = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
+
+		int a = first[0];
+		int b = first[1];
+		int n = first[2];
+
 		int gift = 1;
+
 		int maxs = -1;
 		int maxj = -1;
 
@@ -48,18 +57,17 @@ public class baekjoon17225 {
 		ArrayList<Integer> jisoogift = new ArrayList<Integer>();
 
 		for (int i = 0; i < n; i++) {
-			int time = scan.nextInt();
-			String color = scan.next();
-			int m = scan.nextInt();
+			String[] line = br.readLine().split(" ");
+			int time = Integer.parseInt(line[0]);
+			int m = Integer.parseInt(line[2]);
 			int cnt = 0;
-			if (color.equals("B")) {
+			if (line[1].equals("B")) {
 				// 앞의 선물 포장 끝나고 다음 포장 시작 고려
 				if (maxs > time)
 					time = maxs;
 				for (int j = time; cnt < m; j += a) {
 					pq.add(new Pair(j, "B"));
 					cnt += 1;
-					sgift += 1;
 				}
 				maxs = time + m * a;
 			} else {
@@ -68,7 +76,6 @@ public class baekjoon17225 {
 				for (int j = time; cnt < m; j += b) {
 					pq.add(new Pair(j, "R"));
 					cnt += 1;
-					jgift += 1;
 				}
 				maxj = time + m * b;
 			}
@@ -85,16 +92,17 @@ public class baekjoon17225 {
 		}
 
 		// 정답 출력
-		System.out.println(sgift);
+		bw.write(sangmingift.size() + "\n");
 		for (int i : sangmingift) {
-			System.out.print(i + " ");
+			bw.write(i + " ");
 		}
-		System.out.println();
-		System.out.println(jgift);
+		bw.write("\n");
+		bw.write(jisoogift.size() + "\n");
 		for (int i : jisoogift) {
-			System.out.print(i + " ");
+			bw.write(i + " ");
 		}
-
+		bw.flush();
+		bw.close();
 	}
 
 }
