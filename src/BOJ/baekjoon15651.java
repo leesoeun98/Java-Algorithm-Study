@@ -9,7 +9,7 @@ public class baekjoon15651 {
     static int nums[];
     static BufferedWriter bw;
     static public void main(String[] args) throws IOException {
-        //출력시 시간 초과 나서 바꾸기 
+        //출력시 시간 초과 나서 바꾸기
         bw = new BufferedWriter(new OutputStreamWriter(System.out));
         Scanner scan = new Scanner(System.in);
         n = scan.nextInt();
